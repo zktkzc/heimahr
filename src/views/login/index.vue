@@ -5,20 +5,20 @@
       <h1>登录</h1>
       <el-card shadow="never" class="login-card">
         <!--登录表单-->
-        <el-form>
-          <el-form-item>
-            <el-input placeholder="请输入手机号"></el-input>
+        <el-form ref="form" :model="loginForm" :rules="loginRules">
+          <el-form-item prop="mobile">
+            <el-input v-model="loginForm.mobile" placeholder="请输入手机号"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-input placeholder="请输入密码"></el-input>
+          <el-form-item prop="password">
+            <el-input show-password v-model="loginForm.password" placeholder="请输入密码"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-checkbox>
+          <el-form-item prop="isAgree">
+            <el-checkbox v-model="loginForm.isAgree">
               用户平台使用协议
             </el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" style="width:350px">登录</el-button>
+            <el-button @click="Login" type="primary" style="width:350px">登录</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -27,7 +27,57 @@
 </template>
 <script>
 export default {
-  name: "Login"
+  name: "Login",
+  data() {
+    return {
+      loginForm: {
+        mobile: '',
+        password: '',
+        isAgree: false
+      },
+      loginRules: {
+        mobile: [{
+          required: true,
+          message: '请输入手机号',
+          trigger: 'blur' // blur-失去焦点才触发校验  change-发生更改时触发校验
+        },
+          {
+            pattern: /^1[3-9]\d{9}$/,
+            message: '手机号格式不正确',
+            trigger: 'blur'
+          }],
+        password: [{
+          required: true,
+          message: '请输入密码',
+          trigger: 'blur' // blur-失去焦点才触发校验  change-发生更改时触发校验
+        },
+          {
+            min: 6,
+            max: 16,
+            message: '密码长度应为6-16位之间',
+            trigger: 'blur'
+          }],
+        // required属性值只能检查null、undefined、""
+        isAgree: [
+          {
+            validator: (rule, value, callback) => { // rule-校验规则  value-校验的值  callback-回调函数
+              // 成功时执行callback()，失败时执行callback(new Error(错误信息))
+              value ? callback() : callback(new Error('请阅读并同意协议'))
+            }
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    Login() {
+      this.$refs.form.validate((isOk) => {
+        if (isOk) {
+          alert('校验通过')
+        }
+      })
+    }
+  }
 }
 </script>
 <style lang="scss">
