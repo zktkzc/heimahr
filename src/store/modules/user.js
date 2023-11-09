@@ -1,4 +1,5 @@
 import {getToken, removeToken, setToken} from "@/utils/auth";
+import {login} from "@/api/user";
 
 const state = {
   token: getToken() // 从缓存中读取初始值
@@ -19,15 +20,16 @@ const mutations = {
 
 const actions = {
   // action有两个参数：context-上下文，传入的参数
-  Login(context, data) {
-    // todo:调用登录接口
+  async login(context, data) {
+    // 调用登录接口
+    const token = await login(data)
     // 返回一个token
-    context.commit('setToken', '123456') // 调用mutation
+    context.commit('setToken', token) // 调用mutation
   }
 }
 
 export default {
-  namespace: true, // 开启命名空间
+  namespaced: true, // 开启命名空间
   state,
   mutations,
   actions

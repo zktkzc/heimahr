@@ -18,7 +18,7 @@
             </el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-button @click="Login" type="primary" style="width:350px">登录</el-button>
+            <el-button @click="login" type="primary" style="width:350px">登录</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -27,7 +27,7 @@
 </template>
 <script>
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       loginForm: {
@@ -70,10 +70,10 @@ export default {
     }
   },
   methods: {
-    Login() {
+    login() {
       this.$refs.form.validate((isOk) => {
         if (isOk) {
-          this.$store.dispatch('user/Login', this.loginForm)
+          this.$store.dispatch('user/login', this.loginForm)
         }
       })
     }
