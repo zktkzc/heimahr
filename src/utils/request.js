@@ -3,7 +3,7 @@ import store from "@/store";
 import {Message} from "element-ui";
 
 const service = axios.create({
-  baseURL: '/api', // 基础地址,
+  baseURL: process.env.VUE_APP_BASE_API, // 基础地址
   timeout: 10000 // 超时时间，单位是毫秒
 }) // 创建一个新的axios实例
 
