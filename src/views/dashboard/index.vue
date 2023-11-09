@@ -13,6 +13,10 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  created() {
+    // 初始化之后执行
+    this.$store.dispatch('user/getUserInfo')
   }
 }
 </script>

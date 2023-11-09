@@ -7,3 +7,9 @@ export function login(data) {
     data // 请求参数
   })
 }
+
+export function getUserInfo() {
+  return request({
+    url: '/sys/profile'
+  })
+}
