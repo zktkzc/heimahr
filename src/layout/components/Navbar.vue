@@ -24,7 +24,8 @@
           <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+          <!--prevent修饰符-阻止默认事件-->
+          <a target="_blank" @click.prevent="updatePassword">
             <el-dropdown-item>修改密码</el-dropdown-item>
           </a>
           <!--native-事件的修饰符，注册组件的根元素的原生事件-->
@@ -34,6 +35,27 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <!-- 放置dialog -->
+    <!--sync修饰符-可以接受子组件传递过来的事件和值-->
+    <el-dialog title="修改密码" :visible.sync="showDialog" width="500px" @close="btnCancel">
+      <!-- 放置表单 -->
+      <el-form ref="passForm" label-width="120px" :model="passForm" :rules="rules">
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input size="small" v-model="passForm.oldPassword" show-password/>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input size="small" v-model="passForm.newPassword" show-password/>
+        </el-form-item>
+        <el-form-item label="重复密码" prop="confirmPassword">
+          <el-input size="small" v-model="passForm.confirmPassword" show-password/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="mini" @click="btnOk">确认修改</el-button>
+          <el-button size="mini" @click="btnCancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -41,11 +63,60 @@
 import {mapGetters} from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import {updatePassword} from "@/api/user";
 
 export default {
   components: {
     Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      showDialog: false, // 控制弹层的显示和隐藏
+      passForm: {
+        oldPassword: '', // 旧密码
+        newPassword: '', // 新密码
+        confirmPassword: '' // 确认密码
+      },
+      rules: {
+        oldPassword: [
+          {
+            required: true,
+            message: '请输入旧密码',
+            trigger: 'blur'
+          }
+        ],
+        newPassword: [
+          {
+            required: true,
+            message: '请输入新密码',
+            trigger: 'blur'
+          },
+          {
+            min: 6,
+            max: 16,
+            message: '新密码长度应为6-16个字符',
+            trigger: 'blur'
+          }
+        ],
+        confirmPassword: [
+          {
+            required: true,
+            message: '请输入确认密码',
+            trigger: 'blur'
+          },
+          {
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              if (value !== this.passForm.newPassword) {
+                callback(new Error('两次输入密码不一致'))
+              }
+              callback()
+            }
+          }
+        ]
+      }
+    }
   },
   computed: {
     ...mapGetters([
@@ -55,6 +126,23 @@ export default {
     ])
   },
   methods: {
+    btnOk() {
+      this.$refs.passForm.validate(async isOk => {
+        if (isOk) {
+          // 调用接口
+          await updatePassword(this.passForm)
+          this.$message.success('修改密码成功')
+          this.btnCancel()
+        }
+      })
+    },
+    btnCancel() {
+      this.$refs.passForm.resetFields() // 重置表单
+      this.showDialog = false
+    },
+    updatePassword() {
+      this.showDialog = true
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
