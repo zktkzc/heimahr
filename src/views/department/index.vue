@@ -2,22 +2,22 @@
   <div class="container">
     <div class="app-container">
       <!--展示树形结构-->
-      <el-tree :data="depts" :props="defaultProps" default-expand-all>
+      <el-tree :data="depts" :props="defaultProps" default-expand-all :expand-on-click-node="false">
         <template v-slot="{data}">
           <el-row type="flex" justify="space-between" align="middle" style="width: 100%;height: 40px;">
             <el-col>{{ data.name }}</el-col>
             <el-col :span="4">
               <span class="tree-manager">{{ data.managerName }}</span>
-              <el-dropdown>
+              <el-dropdown @command="operateDept">
                 <!--显示区域内容-->
                 <span class="el-dropdown-link">
                 操作<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
                 <!--下拉菜单选项-->
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-plus">添加子部门</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus">编辑部门</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-circle-plus-outline">删除</el-dropdown-item>
+                  <el-dropdown-item command="add">添加子部门</el-dropdown-item>
+                  <el-dropdown-item command="edit">编辑部门</el-dropdown-item>
+                  <el-dropdown-item command="del">删除</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-col>
@@ -25,17 +25,23 @@
         </template>
       </el-tree>
     </div>
+    <add-dept :show-dialog.sync="showDialog"/>
   </div>
 </template>
 <script>
 
 import {getDepartment} from "@/api/department"
 import {transListToTreeData} from "@/utils"
+import AddDept from "@/views/department/components/add-dept.vue"
 
 export default {
   name: 'Department',
+  components: {
+    AddDept
+  },
   data() {
     return {
+      showDialog: false, // 控制弹层的显示和隐藏
       depts: [], // 数据属性
       defaultProps: {
         label: 'name', // 显示的字段的名称
@@ -49,6 +55,12 @@ export default {
   methods: {
     async getDepartment() {
       this.depts = transListToTreeData(await getDepartment(), 0)
+    },
+    operateDept(type) {
+      if (type === 'add') {
+        // 添加子部门
+        this.showDialog = true // 显示弹层组件
+      }
     }
   }
 }
