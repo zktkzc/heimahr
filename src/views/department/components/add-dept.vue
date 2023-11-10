@@ -1,6 +1,6 @@
 <script>
 
-import {getDepartment, getManagerList} from "@/api/department"
+import {addDepartment, getDepartment, getManagerList} from "@/api/department"
 
 export default {
   props: {
@@ -104,11 +104,27 @@ export default {
   },
   methods: {
     close() {
+      this.$refs.addDept.resetFields() // 重置表单
       // 修改父组件的值
       this.$emit('update:showDialog', false)
     },
     async getManagerList() {
       this.managerList = await getManagerList()
+    },
+    btnOk() {
+      this.$refs.addDept.validate(async isOk => {
+        if (isOk) {
+          await addDepartment({
+            ...this.formData,
+            pid: this.currentNodeId
+          })
+          // 通知父组件更新
+          this.$emit('updateDepartment')
+          // 提示消息
+          this.$message.success('新增部门成功')
+          this.close()
+        }
+      })
     }
   }
 }
@@ -136,8 +152,8 @@ export default {
       <el-form-item>
         <el-row type="flex" justify="center">
           <el-col :span="12">
-            <el-button type="primary" size="mini">确定</el-button>
-            <el-button size="mini">取消</el-button>
+            <el-button type="primary" size="mini" @click="btnOk">确定</el-button>
+            <el-button size="mini" @click="close">取消</el-button>
           </el-col>
         </el-row>
       </el-form-item>
