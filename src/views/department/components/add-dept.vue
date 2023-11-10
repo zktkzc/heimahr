@@ -1,6 +1,6 @@
 <script>
 
-import {addDepartment, getDepartment, getManagerList} from "@/api/department"
+import {addDepartment, getDepartment, getDepartmentDetail, getManagerList} from "@/api/department"
 
 export default {
   props: {
@@ -125,6 +125,9 @@ export default {
           this.close()
         }
       })
+    },
+    async getDepartmentDetail() {
+      this.formData = await getDepartmentDetail(this.currentNodeId)
     }
   }
 }
