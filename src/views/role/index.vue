@@ -29,8 +29,8 @@
         <el-table-column align="center" label="操作">
           <template v-slot="{row}">
             <template v-if="row.isEdit">
-              <el-button size="mini" type="primary">确认</el-button>
-              <el-button size="mini">取消</el-button>
+              <el-button size="mini" type="primary" @click="btnEditOk(row)">确认</el-button>
+              <el-button size="mini" @click="row.isEdit=false">取消</el-button>
             </template>
             <template v-else>
               <el-button size="mini" type="text">分配权限</el-button>
@@ -72,7 +72,7 @@
   </div>
 </template>
 <script>
-import {addRole, getRoleList} from "@/api/role"
+import {addRole, getRoleList, updateRole} from "@/api/role"
 
 export default {
   name: 'Role',
@@ -151,6 +151,15 @@ export default {
       row.editRow.name = row.name
       row.editRow.state = row.state
       row.editRow.description = row.description
+    },
+    async btnEditOk(row) {
+      if (row.editRow.name && row.editRow.description) {
+        await updateRole({...row.editRow, id: row.id})
+        this.$message.success('更新角色成功')
+        Object.assign(row, {...row.editRow, isEdit: false})
+      } else {
+        this.$message.warning('角色名称和角色描述不能为空')
+      }
     }
   }
 }
