@@ -3,29 +3,30 @@
     <div class="app-container">
       <!-- 角色管理的内容 -->
       <div class="role-operate">
-        <el-button type="primary" size="mini">添加角色</el-button>
+        <el-button size="mini" type="primary">添加角色</el-button>
       </div>
       <!-- 放置表格组件 -->
       <el-table :data="roleList">
-        <el-table-column prop="name" width="200" label="角色" align="center"/>
-        <el-table-column prop="state" width="200" label="启用" align="center">
+        <el-table-column align="center" label="角色" prop="name" width="200"/>
+        <el-table-column align="center" label="启用" prop="state" width="200">
           <!-- 自定义列结构 -->
           <template v-slot="{row}">
             <span>{{ row.state === 1 ? '已启用' : row.state === 0 ? '未启用' : '无' }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="描述" align="center"/>
-        <el-table-column label="操作" align="center">
+        <el-table-column align="center" label="描述" prop="description"/>
+        <el-table-column align="center" label="操作">
           <template>
-            <el-button type="text" size="mini">分配权限</el-button>
-            <el-button type="text" size="mini">编辑</el-button>
-            <el-button type="text" size="mini">删除</el-button>
+            <el-button size="mini" type="text">分配权限</el-button>
+            <el-button size="mini" type="text">编辑</el-button>
+            <el-button size="mini" type="text">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!--放置分页组件-->
-      <el-row type="flex" justify="end" align="middle" style="height: 60px;">
-        <el-pagination layout="prev, pager, next"/>
+      <el-row align="middle" justify="end" style="height: 60px;" type="flex">
+        <el-pagination :current-page="pageParams.page" :page-size="pageParams.pagesize" :total="pageParams.total"
+                       layout="prev, pager, next" @current-change="changePage"/>
       </el-row>
     </div>
   </div>
@@ -40,13 +41,24 @@ export default {
   },
   data() {
     return {
-      roleList: []
+      roleList: [],
+      // 将分页信息放置到一个对象中，方便管理
+      pageParams: {
+        page: 1, // 第几页
+        pagesize: 5, // 每页多少条
+        total: 0 // 总数
+      }
     }
   },
   methods: {
     async getRoleList() {
-      const {rows} = await getRoleList()
+      const {rows, total} = await getRoleList(this.pageParams)
       this.roleList = rows
+      this.pageParams.total = total
+    },
+    changePage(newPage) {
+      this.pageParams.page = newPage
+      this.getRoleList()
     }
   }
 }
