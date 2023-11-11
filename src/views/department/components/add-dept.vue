@@ -1,6 +1,6 @@
 <script>
 
-import {addDepartment, getDepartment, getDepartmentDetail, getManagerList} from "@/api/department"
+import {addDepartment, getDepartment, getDepartmentDetail, getManagerList, updateDepartment} from "@/api/department"
 
 export default {
   props: {
@@ -11,6 +11,11 @@ export default {
     currentNodeId: {
       type: Number,
       default: null
+    }
+  },
+  computed: {
+    showTitle() {
+      return this.formData.id ? '编辑部门' : '新增部门'
     }
   },
   data() {
@@ -113,7 +118,14 @@ export default {
   },
   methods: {
     close() {
-      this.$refs.addDept.resetFields() // 重置表单
+      this.formData = {
+        code: '', // 部门编码
+        introduce: '', // 部门介绍
+        managerId: '', // 部门负责人id
+        name: '', // 部门名称
+        pid: '' // 父级部门的id
+      }
+      this.$refs.addDept.resetFields() // 重置表单，resetFields() 只能重置模版中绑定的数据
       // 修改父组件的值
       this.$emit('update:showDialog', false)
     },
@@ -123,14 +135,22 @@ export default {
     btnOk() {
       this.$refs.addDept.validate(async isOk => {
         if (isOk) {
-          await addDepartment({
-            ...this.formData,
-            pid: this.currentNodeId
-          })
+          let msg = '新增'
+          if (this.formData.id) {
+            // 编辑场景
+            msg = '更新'
+            await updateDepartment(this.formData)
+          } else {
+            // 新增场景
+            await addDepartment({
+              ...this.formData,
+              pid: this.currentNodeId
+            })
+          }
           // 通知父组件更新
           this.$emit('updateDepartment')
           // 提示消息
-          this.$message.success('新增部门成功')
+          this.$message.success(`${msg}部门成功`)
           this.close()
         }
       })
@@ -143,7 +163,7 @@ export default {
 </script>
 
 <template>
-  <el-dialog title="添加子部门" :visible="showDialog" @close="close">
+  <el-dialog :title="showTitle" :visible="showDialog" @close="close">
     <el-form label-width="120px" :model="formData" :rules="rules" ref="addDept">
       <el-form-item prop="name" label="部门名称">
         <el-input v-model="formData.name" style="width: 80%;" placeholder="2-10个字符" size="mini"/>
