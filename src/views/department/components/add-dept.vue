@@ -40,7 +40,12 @@ export default {
             trigger: 'blur',
             validator: async (rule, value, callback) => {
               // value就是输入的编码
-              const result = await getDepartment()
+              let result = await getDepartment()
+              // 判断是否是编辑模式
+              if (this.formData.id) {
+                // 编辑场景
+                result = result.filter(item => item.id !== this.formData.id)
+              }
               // result数组中是否存在value值
               if (result.some(item => item.code === value)) {
                 callback(new Error('部门编码已存在'))
@@ -86,7 +91,11 @@ export default {
             trigger: 'blur',
             validator: async (rule, value, callback) => {
               // value就是输入的值
-              const result = await getDepartment()
+              let result = await getDepartment()
+              if (this.formData.id) {
+                // 编辑场景
+                result = result.filter(item => item.id !== this.formData.id)
+              }
               // result数组中是否存在value值
               if (result.some(item => item.name === value)) {
                 callback(new Error('部门名称已存在'))
@@ -149,7 +158,8 @@ export default {
         </el-select>
       </el-form-item>
       <el-form-item prop="introduce" label="部门介绍">
-        <el-input v-model="formData.introduce" style="width: 80%;" type="textarea" :rows="4" placeholder="1-100个字符"
+        <el-input v-model="formData.introduce" style="width: 80%;" type="textarea" :rows="4"
+                  placeholder="1-100个字符"
                   size="mini"/>
       </el-form-item>
       <el-form-item>
