@@ -9,20 +9,20 @@
       <el-table :data="roleList">
         <el-table-column align="center" label="角色" prop="name" width="200">
           <template v-slot="{row}">
-            <el-input v-if="row.isEdit" size="mini"></el-input>
+            <el-input v-if="row.isEdit" v-model="row.editRow.name" size="mini"></el-input>
             <span v-else>{{ row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="启用" prop="state" width="200">
           <!-- 自定义列结构 -->
           <template v-slot="{row}">
-            <el-switch v-if="row.isEdit"/>
+            <el-switch v-if="row.isEdit" v-model="row.editRow.state" :active-value="1" :inactive-value="0"/>
             <span v-else>{{ row.state === 1 ? '已启用' : row.state === 0 ? '未启用' : '无' }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="描述" prop="description">
           <template v-slot="{row}">
-            <el-input v-if="row.isEdit" type="textarea"></el-input>
+            <el-input v-if="row.isEdit" v-model="row.editRow.description" type="textarea"></el-input>
             <span v-else>{{ row.description }}</span>
           </template>
         </el-table-column>
@@ -121,6 +121,11 @@ export default {
       this.roleList.forEach(item => {
         // item.isEdit = false 添加的动态属性，不具备响应式的特点
         this.$set(item, 'isEdit', false) // 针对目标对象添加具备响应式的属性
+        this.$set(item, 'editRow', {
+          name: item.name,
+          state: item.state,
+          description: item.description
+        })
       })
     },
     changePage(newPage) {
@@ -143,6 +148,9 @@ export default {
     },
     btnEditRow(row) {
       row.isEdit = true
+      row.editRow.name = row.name
+      row.editRow.state = row.state
+      row.editRow.description = row.description
     }
   }
 }
