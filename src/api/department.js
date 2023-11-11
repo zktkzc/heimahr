@@ -1,13 +1,19 @@
 import request from "@/utils/request";
 
-// 获取组织架构数据
+/**
+ * 获取组织架构数据
+ * @returns {AxiosPromise}
+ */
 export function getDepartment() {
   return request({
     url: '/company/department'
   })
 }
 
-// 获取部门负责人
+/**
+ * 获取部门负责人
+ * @returns {AxiosPromise}
+ */
 export function getManagerList() {
   return request({
     url: '/sys/user/simple'
@@ -42,5 +48,15 @@ export function updateDepartment(data) {
     url: `/company/department/${data.id}`,
     method: 'put',
     data
+  })
+}
+
+/**
+ * 删除部门
+ */
+export function delDepartment(id) {
+  return request({
+    url: `/company/department/${id}`,
+    method: 'delete'
   })
 }
