@@ -7,7 +7,7 @@
                   type="text"/>
         <!-- 树形组件 -->
         <el-tree ref="deptTree" :data="depts" :expand-on-click-node="false" :props="defaultProps" default-expand-all
-                 highlight-current node-key="id" @current-change="selectNode"/>
+                 highlight-current node-key="id" @node-click="selectNode"/>
       </div>
       <div class="right">
         <el-row class="opeate-tools" justify="end" type="flex">
@@ -16,14 +16,14 @@
           <el-button size="mini">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
-        <el-table>
-          <el-table-column align="center" label="头像"></el-table-column>
-          <el-table-column label="姓名"></el-table-column>
-          <el-table-column label="手机号" sortable></el-table-column>
-          <el-table-column label="工号" sortable></el-table-column>
-          <el-table-column label="聘用形式"></el-table-column>
-          <el-table-column label="部门"></el-table-column>
-          <el-table-column label="入职时间" sortable></el-table-column>
+        <el-table :data="list">
+          <el-table-column align="center" label="头像" prop="staffPhoto"></el-table-column>
+          <el-table-column label="姓名" prop="username"></el-table-column>
+          <el-table-column label="手机号" prop="mobile" sortable></el-table-column>
+          <el-table-column label="工号" prop="workNumber" sortable></el-table-column>
+          <el-table-column label="聘用形式" prop="formOfEmployment"></el-table-column>
+          <el-table-column label="部门" prop="departmentName"></el-table-column>
+          <el-table-column label="入职时间" prop="timeOfEntry" sortable></el-table-column>
           <el-table-column label="操作">
             <template>
               <el-button size="mini" type="text">查看</el-button>
@@ -44,6 +44,7 @@
 <script>
 import {getDepartment} from "@/api/department"
 import {transListToTreeData} from "@/utils"
+import {getEmployeeList} from "@/api/employee"
 
 export default {
   name: 'Employee',
@@ -56,7 +57,8 @@ export default {
       },
       queryParams: {
         departmentId: null
-      }
+      },
+      list: [] // 存储员工列表数据
     }
   },
   created() {
@@ -71,9 +73,16 @@ export default {
         // 设置选中节点的状态
         this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId)
       })
+      // 获取员工列表参数
+      await this.getEmployeeList()
     },
     selectNode(node) {
       this.queryParams.departmentId = node.id
+      this.getEmployeeList()
+    },
+    async getEmployeeList() {
+      const {rows} = await getEmployeeList(this.queryParams.departmentId)
+      this.list = rows
     }
   }
 }
