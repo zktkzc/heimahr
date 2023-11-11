@@ -6,8 +6,8 @@
                   style="margin-bottom:10px"
                   type="text"/>
         <!-- 树形组件 -->
-        <el-tree :data="depts" :expand-on-click-node="false" :props="defaultProps" default-expand-all
-                 highlight-current/>
+        <el-tree ref="deptTree" :data="depts" :expand-on-click-node="false" :props="defaultProps" default-expand-all
+                 highlight-current node-key="id" @current-change="selectNode"/>
       </div>
       <div class="right">
         <el-row class="opeate-tools" justify="end" type="flex">
@@ -34,6 +34,9 @@ export default {
       defaultProps: {
         label: 'name',
         children: 'children'
+      },
+      queryParams: {
+        departmentId: null
       }
     }
   },
@@ -43,6 +46,15 @@ export default {
   methods: {
     async getDepartment() {
       this.depts = transListToTreeData(await getDepartment(), 0)
+      this.queryParams.departmentId = this.depts[0].id
+      this.$nextTick(() => {
+        // 树渲染完毕
+        // 设置选中节点的状态
+        this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId)
+      })
+    },
+    selectNode(node) {
+      this.queryParams.departmentId = node.id
     }
   }
 }
