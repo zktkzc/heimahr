@@ -37,7 +37,7 @@
           <el-table-column label="操作">
             <template v-slot="{row}">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text" @click="btnRole">角色</el-button>
               <el-popconfirm title="确定删除该行数据吗？" @onConfirm="deleteEmployee(row.id)">
                 <el-button slot="reference" size="mini" style="margin-left: 10px;" type="text">删除</el-button>
               </el-popconfirm>
@@ -53,13 +53,18 @@
     </div>
     <!-- 放置excel导入组件 -->
     <ImportExcel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList"/>
+    <el-dialog :visible.sync="showRoleDialog" title="分配角色">
+      <el-checkbox-group v-model="roleIds">
+        <el-checkbox v-for="item in roleList" :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>
+      </el-checkbox-group>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {getDepartment} from "@/api/department"
 import {transListToTreeData} from "@/utils"
-import {deleteEmployee, exportEmployee, getEmployeeList} from "@/api/employee"
+import {deleteEmployee, exportEmployee, getEmployeeList, getEnableRoleList} from "@/api/employee"
 import FileSaver from 'file-saver'
 import ImportExcel from "@/views/employee/components/import-excel.vue"
 
@@ -71,6 +76,7 @@ export default {
   data() {
     return {
       depts: [], // 组织数据
+      showRoleDialog: false, // 控制角色弹层的显示
       defaultProps: {
         label: 'name',
         children: 'children'
@@ -83,7 +89,9 @@ export default {
       },
       list: [], // 存储员工列表数据
       total: 0, // 记录员工的总数
-      showExcelDialog: false //控制Excel导入弹层的显示
+      showExcelDialog: false, //控制Excel导入弹层的显示
+      roleList: [],
+      roleIds: [] // 双向绑定
     }
   },
   created() {
@@ -133,6 +141,10 @@ export default {
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
       this.getEmployeeList()
       this.$message.success('删除员工成功')
+    },
+    async btnRole() {
+      this.showRoleDialog = true
+      this.roleList = await getEnableRoleList()
     }
   }
 }
