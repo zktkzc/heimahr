@@ -18,7 +18,7 @@ export default {
         this.$message.error('上传头像图片只能是 JPG/PNG/GIF/BMP 格式!')
       }
       if (!isLt5M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
+        this.$message.error('上传头像图片大小不能超过 5MB!')
       }
       return isJPG && isLt5M
     }
