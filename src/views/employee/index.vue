@@ -50,7 +50,7 @@
       </div>
     </div>
     <!-- 放置excel导入组件 -->
-    <ImportExcel :show-excel-dialog.sync="showExcelDialog"/>
+    <ImportExcel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList"/>
   </div>
 </template>
 
