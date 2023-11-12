@@ -22,7 +22,7 @@ router.beforeEach(async (to, from, next) => {
             if (!store.getters.userId) {
                 const {roles} = await store.dispatch('user/getUserInfo')
                 const filterRoutes = asyncRoutes.filter(item => {
-                    return roles.menu.includes(item.name)
+                    return roles.menus.includes(item.name)
                 }) // 筛选路由
                 store.commit('user/setRoutes', filterRoutes)
                 router.addRoutes([...filterRoutes, {path: '*', redirect: '/404', hidden: true}]) // 添加动态路由
