@@ -3525,12 +3525,7 @@
   "resolved" "https://registry.npmmirror.com/core-js/-/core-js-2.6.12.tgz"
   "version" "2.6.12"
 
-"core-js@^3.6.5":
-  "integrity" "sha512-XeBzWI6QL3nJQiHmdzbAOiMYqjrb7hwU7A39Qhvd/POSa/t9E1AeZyEZx3fNvp/vtM8zXwhoL0FsiS0hD0pruQ=="
-  "resolved" "https://registry.npmmirror.com/core-js/-/core-js-3.33.2.tgz"
-  "version" "3.33.2"
-
-"core-js@3.25.5":
+"core-js@^3.25.5", "core-js@^3.6.5":
   "integrity" "sha512-nbm6eZSjm+ZuBQxCUPQKQCoUEfFOXjUZ8dTTyikyKaWrTYmAVbykQfwsKE5dBK88u3QCkCrzsx/PPlKfhsvgpw=="
   "resolved" "https://registry.npmmirror.com/core-js/-/core-js-3.25.5.tgz"
   "version" "3.25.5"
