@@ -33,7 +33,7 @@
               <el-button size="mini" @click="row.isEdit=false">取消</el-button>
             </template>
             <template v-else>
-              <el-button size="mini" type="text">分配权限</el-button>
+              <el-button size="mini" type="text" @click="btnPermission">分配权限</el-button>
               <el-button size="mini" type="text" @click="btnEditRow(row)">编辑</el-button>
               <el-popconfirm title="删除" @onConfirm="confirmDel(row.id)">
                 <el-button slot="reference" size="mini" style="margin-left: 10px;" type="text">删除
@@ -72,10 +72,15 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-dialog :visible.sync="showPermissionDialog" title="分配权限">
+      <el-tree :data="permissionData" :props="{label: 'name'}" default-expand-all show-checkbox/>
+    </el-dialog>
   </div>
 </template>
 <script>
 import {addRole, deleteRole, getRoleList, updateRole} from "@/api/role"
+import {getPermissionList} from "@/api/permission"
+import {transListToTreeData} from "@/utils"
 
 export default {
   name: 'Role',
@@ -112,7 +117,9 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      showPermissionDialog: false,
+      permissionData: []
     }
   },
   methods: {
@@ -140,7 +147,7 @@ export default {
         if (isOk) {
           await addRole(this.roleForm)
           this.$message.success('添加角色成功')
-          this.getRoleList()
+          await this.getRoleList()
           this.close()
         }
       })
@@ -171,7 +178,11 @@ export default {
       if (this.roleList.length === 1) {
         this.pageParams.page--
       }
-      this.getRoleList()
+      await this.getRoleList()
+    },
+    async btnPermission() {
+      this.permissionData = transListToTreeData(await getPermissionList(), 0)
+      this.showPermissionDialog = true
     }
   }
 }
