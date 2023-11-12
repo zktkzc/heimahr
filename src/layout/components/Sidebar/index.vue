@@ -3,17 +3,17 @@
     <logo v-if="showLogo" :collapse="isCollapse"/>
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
-        :default-active="activeMenu"
-        :collapse="isCollapse"
-        :background-color="variables.menuBg"
-        :text-color="variables.menuText"
-        :unique-opened="false"
-        :active-text-color="variables.menuActiveText"
-        :collapse-transition="false"
-        mode="vertical"
+          :active-text-color="variables.menuActiveText"
+          :background-color="variables.menuBg"
+          :collapse="isCollapse"
+          :collapse-transition="false"
+          :default-active="activeMenu"
+          :text-color="variables.menuText"
+          :unique-opened="false"
+          mode="vertical"
       >
         <!--遍历路由信息，生成sidebar-item组件-->
-        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path"/>
+        <sidebar-item v-for="route in routes" :key="route.path" :base-path="route.path" :item="route"/>
       </el-menu>
     </el-scrollbar>
   </div>
@@ -29,13 +29,14 @@ export default {
   components: {SidebarItem, Logo},
   computed: {
     ...mapGetters([
-      'sidebar'
+      'sidebar',
+      'routes'
     ]),
     // 路由信息的计算属性
-    routes() {
-      // 返回当前路由的所有路由信息
-      return this.$router.options.routes
-    },
+    // routes() {
+    //   // 返回当前路由的所有路由信息
+    //   return this.$router.options.routes
+    // },
     activeMenu() {
       const route = this.$route
       const {meta, path} = route

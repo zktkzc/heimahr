@@ -24,11 +24,14 @@ router.beforeEach(async (to, from, next) => {
                 const filterRoutes = asyncRoutes.filter(item => {
                     return roles.menu.includes(item.name)
                 }) // 筛选路由
+                store.commit('user/setRoutes', filterRoutes)
                 router.addRoutes([...filterRoutes, {path: '*', redirect: '/404', hidden: true}]) // 添加动态路由
                 // router添加动态路由之后，需要转发一下
                 next(to.path) // 目的是让路由拥有信息
+                nprogress.done()
+            } else {
+                next()
             }
-            next()
         }
     } else {
         // 没有token
