@@ -99,11 +99,15 @@
 <script>
 
 import SelectTree from './components/select-tree.vue'
-import {addEmployee} from "@/api/employee";
+import {addEmployee, getEmployeeDetail} from "@/api/employee";
 
 export default {
   components: {
     SelectTree
+  },
+  created() {
+    // if (this.$route.params.id) this.getEmployeeDetail()
+    this.$route.params.id && this.getEmployeeDetail()
   },
   data() {
     return {
@@ -153,6 +157,9 @@ export default {
           this.$router.push('/employee')
         }
       })
+    },
+    async getEmployeeDetail() {
+      this.userInfo = await getEmployeeDetail(this.$route.params.id)
     }
   }
 }
