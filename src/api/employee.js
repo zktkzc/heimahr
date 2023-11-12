@@ -20,3 +20,13 @@ export function exportEmployee() {
     responseType: 'blob' // 使用blob来接收二进制文件流
   })
 }
+
+/**
+ * 下载员工的导入模版
+ */
+export function getImportTemplate() {
+  return request({
+    url: '/sys/user/import/template',
+    responseType: 'blob'
+  })
+}
