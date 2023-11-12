@@ -37,7 +37,7 @@
           <el-table-column label="操作">
             <template v-slot="{row}">
               <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
-              <el-button size="mini" type="text" @click="btnRole">角色</el-button>
+              <el-button size="mini" type="text" @click="btnRole(row.id)">角色</el-button>
               <el-popconfirm title="确定删除该行数据吗？" @onConfirm="deleteEmployee(row.id)">
                 <el-button slot="reference" size="mini" style="margin-left: 10px;" type="text">删除</el-button>
               </el-popconfirm>
@@ -53,10 +53,16 @@
     </div>
     <!-- 放置excel导入组件 -->
     <ImportExcel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList"/>
-    <el-dialog :visible.sync="showRoleDialog" title="分配角色">
+    <el-dialog :visible.sync="showRoleDialog" title="分配角色" @close="showRoleDialog=false">
       <el-checkbox-group v-model="roleIds">
         <el-checkbox v-for="item in roleList" :key="item.id" :label="item.id">{{ item.name }}</el-checkbox>
       </el-checkbox-group>
+      <el-row slot="footer" justify="center" type="flex">
+        <el-col :span="6">
+          <el-button size="mini" type="primary" @click="btnRoleOk">确定</el-button>
+          <el-button size="mini" @click="showRoleDialog = false">取消</el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -64,7 +70,14 @@
 <script>
 import {getDepartment} from "@/api/department"
 import {transListToTreeData} from "@/utils"
-import {deleteEmployee, exportEmployee, getEmployeeList, getEnableRoleList} from "@/api/employee"
+import {
+  assignRole,
+  deleteEmployee,
+  exportEmployee,
+  getEmployeeDetail,
+  getEmployeeList,
+  getEnableRoleList
+} from "@/api/employee"
 import FileSaver from 'file-saver'
 import ImportExcel from "@/views/employee/components/import-excel.vue"
 
@@ -91,7 +104,8 @@ export default {
       total: 0, // 记录员工的总数
       showExcelDialog: false, //控制Excel导入弹层的显示
       roleList: [],
-      roleIds: [] // 双向绑定
+      roleIds: [], // 双向绑定
+      currentUserId: null // 记录当前点击的用户id
     }
   },
   created() {
@@ -139,12 +153,25 @@ export default {
     async deleteEmployee(id) {
       await deleteEmployee(id)
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
-      this.getEmployeeList()
+      await this.getEmployeeList()
       this.$message.success('删除员工成功')
     },
-    async btnRole() {
-      this.showRoleDialog = true
+    async btnRole(id) {
       this.roleList = await getEnableRoleList()
+      // 记录当前点击的id
+      this.currentUserId = id
+      const {roleIds} = await getEmployeeDetail(id)
+      this.roleIds = roleIds
+      this.showRoleDialog = true
+    },
+    async btnRoleOk() {
+      await assignRole({
+        id: this.currentUserId,
+        roleIds: this.roleIds
+      })
+      this.showRoleDialog = false
+      this.$message.success('分配角色成功')
+      await this.getEmployeeList()
     }
   }
 }
