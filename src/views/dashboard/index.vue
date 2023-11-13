@@ -194,7 +194,13 @@
 import CountTo from 'vue-count-to'
 import {mapGetters} from "vuex"
 import {getHomeData, getMessageList} from "@/api/home"
-import * as echarts from 'echarts' // 引入所有的echarts组件
+//import * as echarts from 'echarts' // 引入所有的echarts组件
+import * as echarts from 'echarts/core'
+import {LineChart} from "echarts/charts"
+import {GridComponent} from "echarts/components" // 引入直角坐标系
+import {CanvasRenderer} from "echarts/renderers" // 引入渲染器
+
+echarts.use([GridComponent, LineChart, CanvasRenderer])
 
 export default {
   components: {
