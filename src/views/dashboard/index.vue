@@ -101,6 +101,7 @@
             </div>
             <div class="chart">
               <!-- 图表 -->
+              <div ref="social" style="width: 100%;height: 100%;"/>
             </div>
           </div>
         </div>
@@ -130,6 +131,7 @@
             </div>
             <div class="chart">
               <!-- 图表 -->
+              <div ref="provident" style="width: 100%;height: 100%;"/>
             </div>
           </div>
         </div>
@@ -192,6 +194,7 @@
 import CountTo from 'vue-count-to'
 import {mapGetters} from "vuex"
 import {getHomeData, getMessageList} from "@/api/home"
+import * as echarts from 'echarts' // 引入所有的echarts组件
 
 export default {
   components: {
@@ -205,6 +208,55 @@ export default {
       'departmentName'
     ])
   },
+  watch: {
+    homeData() {
+      // 设置图表
+      this.social.setOption({
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: this.homeData.socialInsurance?.xAxis
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: this.homeData.socialInsurance?.yAxis,
+            type: 'line',
+            areaStyle: {
+              color: '#04c9be'
+            },
+            lineStyle: {
+              color: '#04c9be'
+            }
+          }
+        ]
+      })
+      this.provident.setOption({
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: this.homeData.providentFund?.xAxis
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: this.homeData.providentFund?.yAxis,
+            type: 'line',
+            areaStyle: {
+              color: '#04c9be'
+            },
+            lineStyle: {
+              color: '#04c9be'
+            }
+          }
+        ]
+      })
+    }
+  },
   data() {
     return {
       homeData: {}, // 存放首页数据的对象
@@ -214,6 +266,12 @@ export default {
   created() {
     this.getHomeData()
     this.getMessageList()
+  },
+  mounted() {
+    // 获取展示的数据，设置给图表
+    // 监听homeData的变化
+    this.social = echarts.init(this.$refs.social) // 初始化echarts实例
+    this.provident = echarts.init(this.$refs.provident)
   },
   methods: {
     async getHomeData() {
